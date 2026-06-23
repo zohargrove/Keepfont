@@ -11,6 +11,7 @@ const fonts = [
     fontFamily: "ABorough",
     fontFile: "/ABorough-Regular-1.ttf",
     previewImage: "/preview-aborough.png",
+    specimenImage: "/alphabet-aborough.png",
     tags: ["brooklyn", "culture", "logo"],
     color: "#FFD700",
     artist: "Zo Hargrove",
@@ -27,6 +28,7 @@ const fonts = [
     fontFamily: "CleanKicks",
     fontFile: "/Cleankicks-Regular-3-2.ttf",
     previewImage: "/preview-cleankicks.png",
+    specimenImage: "/alphabet-cleankicks.png",
     tags: ["sneaker", "streetwear", "bold"],
     color: "#FF3B00",
     artist: "Zo Hargrove",
@@ -43,6 +45,7 @@ const fonts = [
     fontFamily: "Hyperbolic",
     fontFile: "/Hyperbolic-Regular-4-1.ttf",
     previewImage: "/preview-hyperbolic.png",
+    specimenImage: "/alphabet-hyperbolic.png",
     tags: ["futuristic", "premium", "tech"],
     color: "#00FF88",
     artist: "Zo Hargrove",
@@ -65,6 +68,123 @@ const pastWinners = [
   { year: "2024", award: "Best Newcomer", name: "CLEAN KICKS", artist: "Zo Hargrove", previewImage: "/preview-cleankicks.png", color: "#FF3B00" },
 ];
 
+// âââ Alphabet Specimen Modal âââââââââââââââââââââââââââââââââââââââââââââââ
+function SpecimenModal({ font, onClose }) {
+  // Close on Escape key
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  // Prevent body scroll while modal is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9000,
+        background: "rgba(0,0,0,0.92)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "24px",
+        backdropFilter: "blur(4px)",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "#0D0D0D",
+          border: `1px solid ${font.color}33`,
+          maxWidth: "860px",
+          width: "100%",
+          maxHeight: "90vh",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
+      >
+        {/* Modal header */}
+        <div style={{
+          padding: "20px 28px",
+          borderBottom: "1px solid #1A1A1A",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexShrink: 0,
+        }}>
+          <div>
+            <div style={{ fontSize: "9px", letterSpacing: "4px", color: font.color, textTransform: "uppercase", marginBottom: "3px" }}>
+              Full Alphabet
+            </div>
+            <div style={{ fontSize: "16px", fontWeight: "900", letterSpacing: "1px" }}>
+              {font.name}
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              background: "none", border: "1px solid #2A2A2A",
+              color: "#666", width: "36px", height: "36px",
+              fontSize: "18px", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              lineHeight: 1, flexShrink: 0,
+              transition: "border-color 0.2s, color 0.2s",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = font.color; e.currentTarget.style.color = font.color; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#2A2A2A"; e.currentTarget.style.color = "#666"; }}
+            aria-label="Close"
+          >
+            â
+          </button>
+        </div>
+
+        {/* Specimen image */}
+        <div style={{
+          flex: 1,
+          overflow: "auto",
+          background: "#060606",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "32px",
+        }}>
+          <img
+            src={font.specimenImage}
+            alt={`${font.name} full alphabet specimen`}
+            style={{
+              maxWidth: "100%",
+              height: "auto",
+              display: "block",
+            }}
+          />
+        </div>
+
+        {/* Modal footer */}
+        <div style={{
+          padding: "16px 28px",
+          borderTop: "1px solid #1A1A1A",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexShrink: 0,
+        }}>
+          <div style={{ fontSize: "10px", color: "#444", letterSpacing: "2px", textTransform: "uppercase" }}>
+            by {font.artist} â {font.style}
+          </div>
+          <div style={{ fontSize: "10px", color: "#333", letterSpacing: "1px" }}>
+            Press ESC or click outside to close
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// âââ Main App âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export default function Keepfont() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [hoveredFont, setHoveredFont] = useState(null);
@@ -76,6 +196,7 @@ export default function Keepfont() {
   const [activeAwardCat, setActiveAwardCat] = useState("display");
   const [submitForm, setSubmitForm] = useState({ name: "", artist: "", email: "", style: "", category: "Display", awardCategory: "display" });
   const [submitted, setSubmitted] = useState(false);
+  const [specimenFont, setSpecimenFont] = useState(null); // â new: which font's modal is open
 
   const categories = ["All", ...new Set(fonts.map(f => f.category))];
   const filtered = activeCategory === "All" ? fonts : fonts.filter(f => f.category === activeCategory);
@@ -109,6 +230,11 @@ export default function Keepfont() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0A0A0A", color: "#F0F0F0", fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif", overflowX: "hidden" }}>
+
+      {/* ââ Specimen Modal ââ */}
+      {specimenFont && (
+        <SpecimenModal font={specimenFont} onClose={() => setSpecimenFont(null)} />
+      )}
 
       {notification && (
         <div style={{ position: "fixed", bottom: "32px", left: "50%", transform: "translateX(-50%)", background: "#FFD700", color: "#0A0A0A", padding: "12px 28px", fontWeight: "700", fontSize: "13px", letterSpacing: "2px", textTransform: "uppercase", zIndex: 9999, animation: "fadeIn 0.2s ease", whiteSpace: "nowrap" }}>
@@ -166,7 +292,7 @@ export default function Keepfont() {
                   <div style={{ fontSize: "22px", fontWeight: "900", color: hoveredFont === font.id ? "#FFD700" : "#2A2A2A", transition: "color 0.2s" }}>${font.price}</div>
                 </div>
 
-                {/* Real font preview image */}
+                {/* Font preview image */}
                 <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: hoveredFont === font.id ? "#0D0D0D" : "#060606", padding: "24px", overflow: "hidden", minHeight: "140px", border: hoveredFont === font.id ? `1px solid ${font.color}22` : "1px solid #111", transition: "all 0.3s" }}>
                   <img
                     src={font.previewImage}
@@ -183,13 +309,55 @@ export default function Keepfont() {
                   />
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                {/* ââ Bottom row: tags + VIEW ALPHABET + LICENSE ââ */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                    {font.tags.map(tag => <span key={tag} style={{ fontSize: "9px", letterSpacing: "2px", color: "#333", textTransform: "uppercase", border: "1px solid #1A1A1A", padding: "3px 8px" }}>#{tag}</span>)}
+                    {font.tags.map(tag => (
+                      <span key={tag} style={{ fontSize: "9px", letterSpacing: "2px", color: "#333", textTransform: "uppercase", border: "1px solid #1A1A1A", padding: "3px 8px" }}>#{tag}</span>
+                    ))}
                   </div>
-                  <button onClick={() => addToCart(font)} style={{ background: cart.find(f => f.id === font.id) ? "#1A1A1A" : "#FFD700", color: cart.find(f => f.id === font.id) ? "#444" : "#0A0A0A", border: "none", padding: "10px 20px", fontSize: "10px", fontWeight: "900", letterSpacing: "2px", textTransform: "uppercase", cursor: "pointer", transition: "all 0.2s" }}>
-                    {cart.find(f => f.id === font.id) ? "Added â" : "License"}
-                  </button>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    {/* View Alphabet button */}
+                    <button
+                      onClick={() => setSpecimenFont(font)}
+                      style={{
+                        flex: 1,
+                        background: "transparent",
+                        color: font.color,
+                        border: `1px solid ${font.color}55`,
+                        padding: "10px 16px",
+                        fontSize: "10px",
+                        fontWeight: "700",
+                        letterSpacing: "2px",
+                        textTransform: "uppercase",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = `${font.color}11`; e.currentTarget.style.borderColor = font.color; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = `${font.color}55`; }}
+                    >
+                      AâZ â
+                    </button>
+                    {/* License button */}
+                    <button
+                      onClick={() => addToCart(font)}
+                      style={{
+                        flex: 2,
+                        background: cart.find(f => f.id === font.id) ? "#1A1A1A" : "#FFD700",
+                        color: cart.find(f => f.id === font.id) ? "#444" : "#0A0A0A",
+                        border: "none",
+                        padding: "10px 20px",
+                        fontSize: "10px",
+                        fontWeight: "900",
+                        letterSpacing: "2px",
+                        textTransform: "uppercase",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      {cart.find(f => f.id === font.id) ? "Added â" : "License"}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
