@@ -541,9 +541,24 @@ export default function Keepfont() {
                   <div style={{ fontSize: "11px", letterSpacing: "3px", color: "#444", textTransform: "uppercase", marginBottom: "8px" }}>Total â {cart.length} font{cart.length > 1 ? "s" : ""}</div>
                   <div style={{ fontSize: "40px", fontWeight: "900", color: "#FFD700" }}>${total}</div>
                 </div>
-                <button style={{ background: "#FFD700", color: "#0A0A0A", border: "none", padding: "18px 48px", fontSize: "13px", fontWeight: "900", letterSpacing: "3px", textTransform: "uppercase", cursor: "pointer" }}>
-                  Checkout â
-                </button>
+                <button
+  onClick={async () => {
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: cart }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else notify("Checkout error — try again");
+    } catch (err) {
+      notify("Checkout error — try again");
+    }
+  }}
+  style={{ background: "#FFD700", color: "#0A0A0A", border: "none", padding: "18px 48px", fontSize: "13px", fontWeight: "900", letterSpacing: "3px", textTransform: "uppercase", cursor: "pointer" }}>
+  Checkout →
+</button>
               </div>
             </>
           )}
