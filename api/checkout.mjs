@@ -1,8 +1,6 @@
-const Stripe = require("stripe");
+import Stripe from "stripe";
 
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -12,6 +10,8 @@ module.exports = async function handler(req, res) {
   if (!items || items.length === 0) {
     return res.status(400).json({ error: "No items in cart" });
   }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   try {
     const line_items = items.map((item) => ({
@@ -39,4 +39,4 @@ module.exports = async function handler(req, res) {
     console.error("Stripe error:", error);
     res.status(500).json({ error: error.message });
   }
-};
+}
