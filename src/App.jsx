@@ -70,14 +70,12 @@ const pastWinners = [
 
 // âââ Alphabet Specimen Modal âââââââââââââââââââââââââââââââââââââââââââââââ
 function SpecimenModal({ font, onClose }) {
-  // Close on Escape key
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  // Prevent body scroll while modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
@@ -89,9 +87,10 @@ function SpecimenModal({ font, onClose }) {
       style={{
         position: "fixed", inset: 0, zIndex: 9000,
         background: "rgba(0,0,0,0.92)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "24px",
+        display: "flex", alignItems: "flex-start", justifyContent: "center",
+        padding: "16px",
         backdropFilter: "blur(4px)",
+        overflowY: "auto",
       }}
     >
       <div
@@ -101,15 +100,15 @@ function SpecimenModal({ font, onClose }) {
           border: `1px solid ${font.color}33`,
           maxWidth: "860px",
           width: "100%",
-          maxHeight: "90vh",
+          marginTop: "auto",
+          marginBottom: "auto",
           display: "flex",
           flexDirection: "column",
-          overflow: "hidden",
         }}
       >
         {/* Modal header */}
         <div style={{
-          padding: "20px 28px",
+          padding: "20px 24px",
           borderBottom: "1px solid #1A1A1A",
           display: "flex",
           alignItems: "center",
@@ -128,35 +127,29 @@ function SpecimenModal({ font, onClose }) {
             onClick={onClose}
             style={{
               background: "none", border: "1px solid #2A2A2A",
-              color: "#666", width: "36px", height: "36px",
+              color: "#666", width: "40px", height: "40px",
               fontSize: "18px", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-              lineHeight: 1, flexShrink: 0,
-              transition: "border-color 0.2s, color 0.2s",
+              flexShrink: 0,
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = font.color; e.currentTarget.style.color = font.color; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "#2A2A2A"; e.currentTarget.style.color = "#666"; }}
             aria-label="Close"
           >
             â
           </button>
         </div>
 
-        {/* Specimen image */}
+        {/* Specimen image â scrollable on mobile */}
         <div style={{
-          flex: 1,
-          overflow: "auto",
           background: "#060606",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "32px",
+          padding: "24px",
+          overflowX: "auto",
         }}>
           <img
             src={font.specimenImage}
             alt={`${font.name} full alphabet specimen`}
             style={{
-              maxWidth: "100%",
+              width: "100%",
+              minWidth: "320px",
               height: "auto",
               display: "block",
             }}
@@ -165,18 +158,19 @@ function SpecimenModal({ font, onClose }) {
 
         {/* Modal footer */}
         <div style={{
-          padding: "16px 28px",
+          padding: "14px 24px",
           borderTop: "1px solid #1A1A1A",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          flexShrink: 0,
+          flexWrap: "wrap",
+          gap: "8px",
         }}>
           <div style={{ fontSize: "10px", color: "#444", letterSpacing: "2px", textTransform: "uppercase" }}>
             by {font.artist} â {font.style}
           </div>
           <div style={{ fontSize: "10px", color: "#333", letterSpacing: "1px" }}>
-            Press ESC or click outside to close
+            Tap outside to close
           </div>
         </div>
       </div>
@@ -196,7 +190,7 @@ export default function Keepfont() {
   const [activeAwardCat, setActiveAwardCat] = useState("display");
   const [submitForm, setSubmitForm] = useState({ name: "", artist: "", email: "", style: "", category: "Display", awardCategory: "display" });
   const [submitted, setSubmitted] = useState(false);
-  const [specimenFont, setSpecimenFont] = useState(null); // â new: which font's modal is open
+  const [specimenFont, setSpecimenFont] = useState(null);
 
   const categories = ["All", ...new Set(fonts.map(f => f.category))];
   const filtered = activeCategory === "All" ? fonts : fonts.filter(f => f.category === activeCategory);
@@ -223,7 +217,7 @@ export default function Keepfont() {
 
   const navTabs = [
     { id: "browse", label: "Browse" },
-    { id: "awards", label: "The Keeps ð" },
+    { id: "awards", label: "The Keeps" },
     { id: "submit", label: "Submit" },
     { id: "cart", label: `Cart (${cart.length})` },
   ];
@@ -231,7 +225,6 @@ export default function Keepfont() {
   return (
     <div style={{ minHeight: "100vh", background: "#0A0A0A", color: "#F0F0F0", fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif", overflowX: "hidden" }}>
 
-      {/* ââ Specimen Modal ââ */}
       {specimenFont && (
         <SpecimenModal font={specimenFont} onClose={() => setSpecimenFont(null)} />
       )}
@@ -263,7 +256,7 @@ export default function Keepfont() {
         <main>
           <section style={{ padding: "80px 40px 60px", borderBottom: "1px solid #1A1A1A", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: "-60px", right: "-40px", fontSize: "280px", fontWeight: "900", color: "#111", lineHeight: 1, userSelect: "none", pointerEvents: "none", fontFamily: "Impact, fantasy" }}>KF</div>
-            <p style={{ fontSize: "11px", letterSpacing: "4px", color: "#FFD700", textTransform: "uppercase", marginBottom: "20px" }}>Independent Type Foundry â Brooklyn, NY</p>
+            <p style={{ fontSize: "11px", letterSpacing: "4px", color: "#FFD700", textTransform: "uppercase", marginBottom: "20px" }}>Independent Type Foundry &mdash; Brooklyn, NY</p>
             <h1 style={{ fontSize: "clamp(48px, 8vw, 96px)", fontWeight: "900", letterSpacing: "-3px", lineHeight: "0.95", marginBottom: "32px", maxWidth: "700px" }}>
               Fonts Built<br /><span style={{ color: "#FFD700" }}>for Culture.</span>
             </h1>
@@ -289,10 +282,11 @@ export default function Keepfont() {
                     <div style={{ fontSize: "12px", color: "#444", marginTop: "2px" }}>by {font.artist}</div>
                     <div style={{ fontSize: "11px", color: "#555", marginTop: "4px", fontStyle: "italic" }}>{font.description}</div>
                   </div>
-                  <div style={{ fontSize: "22px", fontWeight: "900", color: hoveredFont === font.id ? "#FFD700" : "#2A2A2A", transition: "color 0.2s" }}>${font.price}</div>
+                  <div style={{ fontSize: "22px", fontWeight: "900", color: hoveredFont === font.id ? "#FFD700" : "#2A2A2A", transition: "color 0.2s" }}>
+                    {font.free ? <span style={{ fontSize: "13px", color: "#00FF88", letterSpacing: "2px" }}>FREE</span> : `$${font.price}`}
+                  </div>
                 </div>
 
-                {/* Font preview image */}
                 <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: hoveredFont === font.id ? "#0D0D0D" : "#060606", padding: "24px", overflow: "hidden", minHeight: "140px", border: hoveredFont === font.id ? `1px solid ${font.color}22` : "1px solid #111", transition: "all 0.3s" }}>
                   <img
                     src={font.previewImage}
@@ -309,7 +303,6 @@ export default function Keepfont() {
                   />
                 </div>
 
-                {/* ââ Bottom row: tags + VIEW ALPHABET + LICENSE ââ */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                     {font.tags.map(tag => (
@@ -317,7 +310,6 @@ export default function Keepfont() {
                     ))}
                   </div>
                   <div style={{ display: "flex", gap: "8px" }}>
-                    {/* View Alphabet button */}
                     <button
                       onClick={() => setSpecimenFont(font)}
                       style={{
@@ -336,27 +328,51 @@ export default function Keepfont() {
                       onMouseEnter={e => { e.currentTarget.style.background = `${font.color}11`; e.currentTarget.style.borderColor = font.color; }}
                       onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = `${font.color}55`; }}
                     >
-                      AâZ â
+                      A&ndash;Z â
                     </button>
-                    {/* License button */}
-                    <button
-                      onClick={() => addToCart(font)}
-                      style={{
-                        flex: 2,
-                        background: cart.find(f => f.id === font.id) ? "#1A1A1A" : "#FFD700",
-                        color: cart.find(f => f.id === font.id) ? "#444" : "#0A0A0A",
-                        border: "none",
-                        padding: "10px 20px",
-                        fontSize: "10px",
-                        fontWeight: "900",
-                        letterSpacing: "2px",
-                        textTransform: "uppercase",
-                        cursor: "pointer",
-                        transition: "all 0.2s",
-                      }}
-                    >
-                      {cart.find(f => f.id === font.id) ? "Added â" : "License"}
-                    </button>
+                    {font.free ? (
+                      <a
+                        href={font.fontFile}
+                        download
+                        style={{
+                          flex: 2,
+                          background: "#00FF88",
+                          color: "#0A0A0A",
+                          border: "none",
+                          padding: "10px 20px",
+                          fontSize: "10px",
+                          fontWeight: "900",
+                          letterSpacing: "2px",
+                          textTransform: "uppercase",
+                          cursor: "pointer",
+                          textDecoration: "none",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        Free Download â
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => addToCart(font)}
+                        style={{
+                          flex: 2,
+                          background: cart.find(f => f.id === font.id) ? "#1A1A1A" : "#FFD700",
+                          color: cart.find(f => f.id === font.id) ? "#444" : "#0A0A0A",
+                          border: "none",
+                          padding: "10px 20px",
+                          fontSize: "10px",
+                          fontWeight: "900",
+                          letterSpacing: "2px",
+                          textTransform: "uppercase",
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                        }}
+                      >
+                        {cart.find(f => f.id === font.id) ? "Added â" : "License"}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -458,7 +474,6 @@ export default function Keepfont() {
               <p style={{ fontSize: "14px", color: "#555", lineHeight: "1.8", marginBottom: "48px" }}>
                 Open to all independent type designers. One font per submission. A $9 submission fee keeps the awards running and the community strong.
               </p>
-
               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                 {[
                   { label: "Font Name", key: "name", placeholder: "e.g. A BOROUGH" },
@@ -471,14 +486,12 @@ export default function Keepfont() {
                     <input value={submitForm[field.key]} onChange={e => setSubmitForm(p => ({ ...p, [field.key]: e.target.value }))} placeholder={field.placeholder} style={{ width: "100%", background: "#111", border: "1px solid #2A2A2A", color: "#F0F0F0", padding: "16px 20px", fontSize: "14px", outline: "none" }} />
                   </div>
                 ))}
-
                 <div>
                   <label style={{ fontSize: "10px", letterSpacing: "3px", color: "#555", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Font Category</label>
                   <select value={submitForm.category} onChange={e => setSubmitForm(p => ({ ...p, category: e.target.value }))} style={{ width: "100%", background: "#111", border: "1px solid #2A2A2A", color: "#F0F0F0", padding: "16px 20px", fontSize: "14px", outline: "none" }}>
                     {["Display", "Serif", "Script", "Monospace", "Slab Serif", "Sans Serif"].map(c => <option key={c}>{c}</option>)}
                   </select>
                 </div>
-
                 <div style={{ marginTop: "8px", padding: "24px", background: "#0C0C0C", border: "1px solid #2A2A2A", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div>
                     <div style={{ fontSize: "10px", letterSpacing: "3px", color: "#444", textTransform: "uppercase" }}>Submission Fee</div>
@@ -486,7 +499,6 @@ export default function Keepfont() {
                   </div>
                   <div style={{ fontSize: "12px", color: "#444", maxWidth: "200px", lineHeight: "1.7" }}>Funds the awards, community features & winner prizes</div>
                 </div>
-
                 <button onClick={handleSubmit} style={{ background: "#FFD700", color: "#0A0A0A", border: "none", padding: "20px", fontSize: "13px", fontWeight: "900", letterSpacing: "4px", textTransform: "uppercase", cursor: "pointer" }}>
                   Submit & Pay $9 â
                 </button>
@@ -542,23 +554,23 @@ export default function Keepfont() {
                   <div style={{ fontSize: "40px", fontWeight: "900", color: "#FFD700" }}>${total}</div>
                 </div>
                 <button
-  onClick={async () => {
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: cart }),
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else notify("Checkout error — try again");
-    } catch (err) {
-      notify("Checkout error — try again");
-    }
-  }}
-  style={{ background: "#FFD700", color: "#0A0A0A", border: "none", padding: "18px 48px", fontSize: "13px", fontWeight: "900", letterSpacing: "3px", textTransform: "uppercase", cursor: "pointer" }}>
-  Checkout →
-</button>
+                  onClick={async () => {
+                    try {
+                      const res = await fetch("/api/checkout.mjs", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ items: cart }),
+                      });
+                      const data = await res.json();
+                      if (data.url) window.location.href = data.url;
+                      else notify("Checkout error â try again");
+                    } catch (err) {
+                      notify("Checkout error â try again");
+                    }
+                  }}
+                  style={{ background: "#FFD700", color: "#0A0A0A", border: "none", padding: "18px 48px", fontSize: "13px", fontWeight: "900", letterSpacing: "3px", textTransform: "uppercase", cursor: "pointer" }}>
+                  Checkout â
+                </button>
               </div>
             </>
           )}
